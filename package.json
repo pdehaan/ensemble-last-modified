@@ -11,7 +11,7 @@
     "express": "4.16.4",
     "ms": "2.1.1"
   },
-  "homepage": "https://github.com/pdehaan/ensemble-last-modified#readme",
+  "homepage": "https://github.com/pdehaan/ensemble-last-modified",
   "keywords": [],
   "license": "MPL-2.0",
   "main": "index.js",

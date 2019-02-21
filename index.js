@@ -2,32 +2,37 @@ const axios = require("axios");
 const express = require("express");
 const ms = require("ms");
 
+const packageJson = require("./package.json");
+
+const client = axios.create({
+  baseURL: "https://data.firefox.com/"
+});
+
 const dashboards = [
-  "https://data.firefox.com/datasets/desktop/user-activity",
-  "https://data.firefox.com/datasets/desktop/usage-behavior",
-  "https://data.firefox.com/datasets/desktop/hardware"
+  "/datasets/desktop/user-activity",
+  "/datasets/desktop/usage-behavior",
+  "/datasets/desktop/hardware"
 ];
 
 const app = express();
 app.get("/", async (req, res) => {
-  const ages = [];
+  const {data: versionJson} = await client.get("/__version__");
+
+  const ages = {};
   for (const dashboardUrl of dashboards) {
-    const dashboardAge = await lastModified(dashboardUrl);
-    ages.push({
-      dashboardUrl,
-      dashboardAge
-    });
+    ages[dashboardUrl] = await lastModified(dashboardUrl);
   }
-  res.json(ages);
+
+  versionJson.dashboads = ages;
+  versionJson.homepage = packageJson.homepage;
+
+  res.json(versionJson);
 });
 
 module.exports = app;
 
 async function lastModified(uri) {
-  const { data } = await axios.get(uri);
-  return age(data.dates[0]);
-}
-
-function age(date) {
+  const { data } = await client.get(uri);
+  const date = data.dates[0];
   return ms(new Date(date) - Date.now());
 }
